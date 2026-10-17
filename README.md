@@ -87,6 +87,28 @@ npm start
 
 ---
 
+## 🌐 Deploying to Vercel & Cloud
+
+### 1. Frontend on Vercel
+1. Go to [vercel.com/new](https://vercel.com/new) and log in.
+2. Select **Import Git Repository** and choose `parekhhyash/undercover`.
+3. Vercel automatically detects the root `vercel.json` configuration (`client/build`).
+4. (Optional) In **Environment Variables**, set:
+   - `REACT_APP_SERVER_URL`: `https://your-server-backend.onrender.com`
+5. Click **Deploy**!
+
+### 2. WebSocket Backend on Render (Free Persistent Node.js)
+Because Socket.IO requires persistent WebSockets (which ephemeral serverless functions cannot hold indefinitely), deploy the `server/` directory on Render or Railway:
+1. Go to [dashboard.render.com](https://dashboard.render.com/) -> **New** -> **Web Service**.
+2. Connect `parekhhyash/undercover`.
+3. Configure:
+   - **Root Directory:** `server`
+   - **Build Command:** `npm install`
+   - **Start Command:** `node server.js`
+4. Copy your live Render URL (e.g. `https://undercover-server.onrender.com`) and paste it as `REACT_APP_SERVER_URL` in your Vercel project environment settings.
+
+---
+
 ## 🛠️ Architecture & Tech Stack
 
 - **Client:** React 19, Vanilla CSS Design System with glassmorphism, responsive design, Canvas Confetti, Web Audio API synthesis.
