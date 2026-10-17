@@ -11,6 +11,7 @@ import VotingPhaseScreen from "./components/VotingPhaseScreen";
 import MrWhiteGuessModal from "./components/MrWhiteGuessModal";
 import RoundSummaryScreen from "./components/RoundSummaryScreen";
 import GameOverScreen from "./components/GameOverScreen";
+import OfflineClueScreen from "./components/OfflineClueScreen";
 
 const SERVER_URL = process.env.REACT_APP_SERVER_URL || "http://localhost:5000";
 
@@ -70,12 +71,12 @@ function App() {
   }, []);
 
   // Handlers for server communication
-  const handleCreateRoom = ({ hostName, avatar }) => {
+  const handleCreateRoom = ({ hostName, avatar, gameMode }) => {
     if (!socketRef.current) return;
     setLoading(true);
     setError("");
 
-    socketRef.current.emit("room:create", { hostName, avatar }, (res) => {
+    socketRef.current.emit("room:create", { hostName, avatar, gameMode }, (res) => {
       if (!res.success) {
         setError(res.message || "Failed to create room");
         setLoading(false);
@@ -236,16 +237,23 @@ function App() {
         );
 
       case "CLUE_PHASE":
-        return (
+      case "DISCUSSION_PHASE":
+        if (roomState.gameMode === "OFFLINE") {
+          return (
+            <OfflineClueScreen
+              room={roomState}
+              socketId={socketId}
+              onForceStartVoting={handleForceStartVoting}
+            />
+          );
+        }
+        return roomState.status === "CLUE_PHASE" ? (
           <CluePhaseScreen
             room={roomState}
             socketId={socketId}
             onSubmitClue={handleSubmitClue}
           />
-        );
-
-      case "DISCUSSION_PHASE":
-        return (
+        ) : (
           <DiscussionPhaseScreen
             room={roomState}
             socketId={socketId}

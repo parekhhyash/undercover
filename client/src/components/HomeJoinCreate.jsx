@@ -9,6 +9,7 @@ export default function HomeJoinCreate({ onCreateRoom, onJoinRoom, loading, erro
   const [selectedAvatar, setSelectedAvatar] = useState(
     localStorage.getItem("undercover_player_avatar") || AVATARS[0]
   );
+  const [gameMode, setGameMode] = useState("ONLINE"); // 'ONLINE' or 'OFFLINE'
   const [roomCode, setRoomCode] = useState("");
 
   // Check URL query parameters for ?room=CODE
@@ -37,7 +38,7 @@ export default function HomeJoinCreate({ onCreateRoom, onJoinRoom, loading, erro
     e.preventDefault();
     sounds.playPop();
     const finalName = playerName.trim() || "Host Agent";
-    onCreateRoom({ hostName: finalName, avatar: selectedAvatar });
+    onCreateRoom({ hostName: finalName, avatar: selectedAvatar, gameMode });
   };
 
   const handleJoin = (e) => {
@@ -149,13 +150,65 @@ export default function HomeJoinCreate({ onCreateRoom, onJoinRoom, loading, erro
               </div>
             </div>
 
+            {/* Game Mode Selection */}
+            <div className="input-group" style={{ marginTop: "0.8rem" }}>
+              <label className="input-label">Select Game Mode</label>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.8rem", marginTop: "0.3rem" }}>
+                <div
+                  style={{
+                    background: gameMode === "ONLINE" ? "rgba(108, 92, 231, 0.28)" : "rgba(255, 255, 255, 0.05)",
+                    border: `2px solid ${gameMode === "ONLINE" ? "var(--primary)" : "var(--border-glass)"}`,
+                    borderRadius: "16px",
+                    padding: "0.85rem 0.6rem",
+                    cursor: "pointer",
+                    textAlign: "center",
+                    transition: "all 0.2s ease",
+                    boxShadow: gameMode === "ONLINE" ? "0 0 15px rgba(108, 92, 231, 0.4)" : "none"
+                  }}
+                  onClick={() => { sounds.playPop(); setGameMode("ONLINE"); }}
+                >
+                  <div style={{ fontSize: "1.8rem" }}>🌐</div>
+                  <div style={{ fontWeight: 800, fontSize: "1.05rem", color: "#fff", marginTop: "0.2rem" }}>
+                    Online Mode
+                  </div>
+                  <div style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginTop: "0.25rem", lineHeight: 1.3 }}>
+                    Remote: Type clues & use chat
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    background: gameMode === "OFFLINE" ? "rgba(16, 172, 132, 0.28)" : "rgba(255, 255, 255, 0.05)",
+                    border: `2px solid ${gameMode === "OFFLINE" ? "var(--role-civilian)" : "var(--border-glass)"}`,
+                    borderRadius: "16px",
+                    padding: "0.85rem 0.6rem",
+                    cursor: "pointer",
+                    textAlign: "center",
+                    transition: "all 0.2s ease",
+                    boxShadow: gameMode === "OFFLINE" ? "0 0 15px rgba(16, 172, 132, 0.4)" : "none"
+                  }}
+                  onClick={() => { sounds.playPop(); setGameMode("OFFLINE"); }}
+                >
+                  <div style={{ fontSize: "1.8rem" }}>👥</div>
+                  <div style={{ fontWeight: 800, fontSize: "1.05rem", color: "#fff", marginTop: "0.2rem" }}>
+                    Offline Mode
+                  </div>
+                  <div style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginTop: "0.25rem", lineHeight: 1.3 }}>
+                    In-Person: Say clues out loud!
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <button
               type="submit"
-              className="btn-accent"
+              className={gameMode === "OFFLINE" ? "btn-emerald" : "btn-accent"}
               style={{ width: "100%", marginTop: "1rem", fontSize: "1.15rem" }}
               disabled={loading}
             >
-              {loading ? "Creating Secret Room..." : "Create Room & Become Host 👑"}
+              {loading
+                ? "Creating Secret Room..."
+                : `Create ${gameMode === "OFFLINE" ? "Offline 👥" : "Online 🌐"} Room & Host 👑`}
             </button>
           </form>
         ) : (

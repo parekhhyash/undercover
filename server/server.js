@@ -84,12 +84,13 @@ io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
   // Create room
-  socket.on("room:create", ({ hostName, avatar }, callback) => {
+  socket.on("room:create", ({ hostName, avatar, gameMode }, callback) => {
     try {
       const room = gameManager.createRoom({
         hostName: hostName || "Host",
         avatar: avatar || "🕵️",
-        socketId: socket.id
+        socketId: socket.id,
+        gameMode: gameMode || "ONLINE"
       });
       socket.join(room.code);
       const state = gameManager.getSanitizedState(room, socket.id);

@@ -29,10 +29,14 @@ Undercover is a social deduction game of bluffing, observation, and convincing y
 
 ## ✨ Features
 
+- **🌐 Dual Game Modes (Online & Offline / In-Person):**
+  - **🌐 Online Mode:** Remote party play with in-app 1-word clue typing, turn countdowns, and live accusation chat.
+  - **👥 Offline / In-Person Mode:** Party in the same room! Clue typing and chat are skipped so friends speak clues out loud and debate face-to-face. The app handles secret roles, confidential words, elimination voting, and leaderboard scoring!
 - **🏠 Room Creation & Sharing:**
   - Create or join rooms with unique 6-character room codes.
   - One-click **Copy Room Code** and **Copy Direct Invite Link** (`?room=CODE`).
 - **⚙️ Customizable Host Controls:**
+  - Toggle between **Online** and **Offline** modes anytime in the lobby.
   - Configurable number of rounds (1–10).
   - Configurable Undercover count (1–4) and Mr. White count (0–3).
   - Kick player controls.

@@ -48,7 +48,7 @@ class GameManager {
     this.timers.set(roomCode, timeout);
   }
 
-  createRoom({ hostName, avatar, socketId }) {
+  createRoom({ hostName, avatar, socketId, gameMode }) {
     let roomCode;
     do {
       roomCode = generateCode();
@@ -57,6 +57,7 @@ class GameManager {
     const room = {
       code: roomCode,
       hostId: socketId,
+      gameMode: gameMode === "OFFLINE" ? "OFFLINE" : "ONLINE", // ONLINE or OFFLINE
       status: "LOBBY", // LOBBY, ROLE_REVEAL, CLUE_PHASE, DISCUSSION_PHASE, VOTING_PHASE, MRWHITE_GUESS, ROUND_SUMMARY, GAME_OVER
       settings: {
         rounds: 3,
@@ -199,6 +200,9 @@ class GameManager {
     if (room.hostId !== socketId) throw new Error("Only the host can change settings");
     if (room.status !== "LOBBY") throw new Error("Settings can only be changed in the lobby");
 
+    if (settings.gameMode && ["ONLINE", "OFFLINE"].includes(settings.gameMode)) {
+      room.gameMode = settings.gameMode;
+    }
     if (settings.rounds !== undefined) {
       room.settings.rounds = Math.max(1, Math.min(10, parseInt(settings.rounds, 10) || 3));
     }
@@ -338,7 +342,12 @@ class GameManager {
     room.currentTurnIndex = 0;
 
     this.broadcastRoom(room);
-    this.setupTurn(room);
+
+    // If ONLINE mode, set up turn timers and bot clue typing
+    if (room.gameMode === "ONLINE") {
+      this.setupTurn(room);
+    }
+    // In OFFLINE mode, players speak clues out loud in person. No typing or countdown.
   }
 
   setupTurn(room) {
@@ -450,8 +459,11 @@ class GameManager {
 
   forceStartVoting({ roomCode, socketId }) {
     const room = this.getRoom(roomCode);
-    if (!room || room.status !== "DISCUSSION_PHASE") return;
-    if (room.hostId !== socketId) throw new Error("Only the host can start voting early");
+    if (!room) return;
+    if (room.status !== "DISCUSSION_PHASE" && room.status !== "CLUE_PHASE") return;
+    if (room.gameMode === "ONLINE" && room.hostId !== socketId) {
+      throw new Error("Only the host can start voting early");
+    }
     this.startVotingPhase(room);
   }
 
@@ -801,6 +813,7 @@ class GameManager {
     return {
       code: room.code,
       hostId: room.hostId,
+      gameMode: room.gameMode || "ONLINE",
       status: room.status,
       settings: room.settings,
       currentRound: room.currentRound,

@@ -42,6 +42,12 @@ export default function LobbyScreen({
     onUpdateSettings(updated);
   };
 
+  const handleToggleGameMode = () => {
+    sounds.playPop();
+    const nextMode = room.gameMode === "OFFLINE" ? "ONLINE" : "OFFLINE";
+    onUpdateSettings({ ...settings, gameMode: nextMode });
+  };
+
   return (
     <div style={{ maxWidth: "780px", margin: "0 auto", width: "100%" }}>
       {/* Toast Notification */}
@@ -90,6 +96,41 @@ export default function LobbyScreen({
           <span className="pill-tag pill-host">
             {isHost ? "You are Host 👑" : "Host is configuring"}
           </span>
+        </div>
+
+        {/* Game Mode Banner & Switcher */}
+        <div style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          background: room.gameMode === "OFFLINE" ? "rgba(16, 172, 132, 0.15)" : "rgba(108, 92, 231, 0.15)",
+          border: `1px solid ${room.gameMode === "OFFLINE" ? "var(--role-civilian)" : "var(--primary)"}`,
+          borderRadius: "16px",
+          padding: "0.85rem 1.1rem",
+          marginBottom: "1.2rem",
+          flexWrap: "wrap",
+          gap: "0.6rem"
+        }}>
+          <div>
+            <div style={{ fontWeight: 800, fontSize: "1.05rem", color: "#fff", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+              {room.gameMode === "OFFLINE" ? "👥 Offline Mode (In-Person Party)" : "🌐 Online Mode (Remote Party)"}
+            </div>
+            <div style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginTop: "0.15rem" }}>
+              {room.gameMode === "OFFLINE"
+                ? "Players say clues out loud in person. No typing or chat needed — app handles secret roles & voting!"
+                : "Players type clues in the app with turn countdowns & live chat."}
+            </div>
+          </div>
+
+          {isHost && (
+            <button
+              className="btn-secondary"
+              style={{ fontSize: "0.85rem", padding: "0.45rem 0.9rem" }}
+              onClick={handleToggleGameMode}
+            >
+              Switch to {room.gameMode === "OFFLINE" ? "Online Mode 🌐" : "Offline Mode 👥"}
+            </button>
+          )}
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
